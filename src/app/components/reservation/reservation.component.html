@@ -3,29 +3,28 @@
     <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
       <mat-card-title>Check if the resource is available</mat-card-title>
       <mat-card-content>
-        <mat-form-field appearance="fill" class="example-form-field">
+
+        <!-- Date picker -->
+        <mat-form-field appearance="fill" class="form-input">
           <mat-label>Choose a date</mat-label>
-          <input matInput [matDatepicker]="datepicker" formControlName="date">
+          <input matInput [matDatepicker]="picker" formControlName="date">
           <mat-hint>MM/DD/YYYY</mat-hint>
-          <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
-          <mat-datepicker #datepicker>
-            <mat-datepicker-actions>
-              <button mat-button matDatepickerCancel>Cancel</button>
-              <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
-            </mat-datepicker-actions>
-          </mat-datepicker>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error>You need to choose a date</mat-error>
         </mat-form-field>
-        <br/>
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="fill" *ngIf="availableReservations">
           <mat-label>Hour</mat-label>
           <mat-select formControlName="hours">
-            <mat-option *ngFor="let reservation of availableReservations" [value]="reservation">
-              {{reservation}}
+            <mat-option *ngFor="let reservation of availableReservations" [value]="reservation.value">
+              {{reservation.displayValue}}
             </mat-option>
           </mat-select>
+          <mat-error>You need to choose an hour</mat-error>
         </mat-form-field>
-        <p class="text-center warn">{{errorMessage}}</p>
-        <button mat-flat-button color="primary" type="submit" [disabled]="reservationForm.invalid">Check availiability</button>
+
+        <p class="warn">{{errorMessage}}</p>
+        <button mat-flat-button color="primary" type="submit" [disabled]="reservationForm.invalid">Check availability</button>
       </mat-card-content>
     </form>
   </mat-card>
