@@ -4,6 +4,7 @@ import {ReservationHoursModel} from "../../models/reservation-hours.model"
 import {ReservationService} from "../../services/reservation.service";
 // @ts-ignore
 import data from "../../models/json/reservation-hours.json";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-reservation',
@@ -12,18 +13,19 @@ import data from "../../models/json/reservation-hours.json";
 })
 export class ReservationComponent {
   reservationForm: FormGroup;
-  datePicker: FormControl;
+  datePickerCtrl: FormControl;
   hoursPickerCtrl: FormControl;
   errorMessage: string = '';
   availableReservations: ReservationHoursModel[] = data;
 
   constructor(private reservationService: ReservationService,
-              public formBuilder: FormBuilder) {
-    this.datePicker = formBuilder.control('', Validators.required);
+              private snackBar: MatSnackBar,
+              private formBuilder: FormBuilder) {
+    this.datePickerCtrl = formBuilder.control('', Validators.required);
     this.hoursPickerCtrl = formBuilder.control('', Validators.required);
 
     this.reservationForm = formBuilder.group({
-      date: this.datePicker,
+      date: this.datePickerCtrl,
       hours: this.hoursPickerCtrl,
     });
   }
@@ -33,6 +35,7 @@ export class ReservationComponent {
     this.reservationService.isDateAvailable(data).subscribe({
       next: (value: {available: boolean}) => {
         console.log(value);
+        this.openSnackBar('ok', 'close')
       },
       error: err => {
         console.error(err);
@@ -45,5 +48,9 @@ export class ReservationComponent {
     let start: string = this.reservationForm.value['date'].toISOString();
     start = start.substr(0,10);
     return `${start}T${this.reservationForm.value['hours']}Z`;
+  }
+
+  openSnackBar(message: string, action: string): void {
+    this.snackBar.open(message, action);
   }
 }
