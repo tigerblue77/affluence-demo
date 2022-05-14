@@ -1,8 +1,9 @@
-.form-input {
-  margin-top: 24px;
-  margin-bottom: 24px;
-}
+.reservation {
+  .mat-card {
+    width: 500px;
 
-.warn {
-  color: red !important;
+    .mat-flat-button, .mat-form-field {
+      width: 100%;
+    }
+  }
 }

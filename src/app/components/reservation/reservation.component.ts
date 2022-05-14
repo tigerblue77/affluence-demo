@@ -5,6 +5,7 @@ import {ReservationService} from "../../services/reservation.service";
 // @ts-ignore
 import data from "../../models/json/reservation-hours.json";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {ReservationAvailableModel} from "../../models/reservation-available.model";
 
 @Component({
   selector: 'app-reservation',
@@ -31,15 +32,16 @@ export class ReservationComponent {
   }
 
   onSubmit(): void {
+    this.errorMessage = '';
     const data = this.formatDate();
+
     this.reservationService.isDateAvailable(data).subscribe({
-      next: (value: {available: boolean}) => {
-        console.log(value);
-        this.openSnackBar('ok', 'close')
+      next: (result: ReservationAvailableModel) => {
+        this.openSnackBar('close', result.available);
       },
       error: err => {
         console.error(err);
-        this.errorMessage = err.error.message;
+        this.errorMessage = 'Server error. Please contact Affluences support.';
       }
     })
   }
@@ -47,10 +49,26 @@ export class ReservationComponent {
   private formatDate(): string {
     let start: string = this.reservationForm.value['date'].toISOString();
     start = start.substr(0,10);
+
     return `${start}T${this.reservationForm.value['hours']}Z`;
   }
 
-  openSnackBar(message: string, action: string): void {
+  private openSnackBar(action: string, isValid: boolean): void {
+    let isAvailable: string;
+    let continueProcess: string;
+    let date: string = this.reservationForm.value['date'].toISOString();
+
+    if(isValid) {
+      isAvailable = 'available';
+      continueProcess = 'You can start the reservation precess.'
+    } else {
+      isAvailable = 'not available';
+      continueProcess = '';
+    }
+
+    date = date.substr(0,10);
+    const message: string = `The resource is ${isAvailable} on ${date} at ${this.reservationForm.value['hours']}. ${continueProcess}`;
+
     this.snackBar.open(message, action);
   }
 }
